@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open House · ผู้ขายและคุณครู</title>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1d2350;--blue:#2a34c4;--muted:#6b6f8d;--bg:#f6f4fb}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Prompt',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.top{background:linear-gradient(135deg,#6f7df5,#a46fe0 55%,#ee6fb9);color:#fff;padding:18px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.top b{font-size:16px;font-weight:800}.top small{display:block;opacity:.9;font-weight:400}
+.wrap{max-width:960px;margin:22px auto;padding:0 16px}
+.card{background:#fff;border-radius:22px;padding:22px;box-shadow:0 12px 34px rgba(90,60,170,.12);margin-bottom:18px}
+h2{margin:0 0 6px;font-size:22px}p{color:var(--muted);line-height:1.6;margin:0 0 14px}
+label{display:block;font-weight:600;font-size:14px;margin:12px 0 6px}
+input,select{width:100%;font:inherit;border:1px solid #ddd8f2;border-radius:12px;padding:12px;background:#faf9ff;color:var(--ink)}
+input:focus,select:focus{outline:3px solid rgba(123,108,240,.3);border-color:#7b6cf0}
+.btn{border:0;font:inherit;font-weight:700;font-size:15px;padding:12px 20px;border-radius:14px;cursor:pointer;color:#fff;background:linear-gradient(90deg,#8f5be8,#ee5fae)}
+.btn.ghost{background:#ece7fb;color:#5a3fc0}.btn.red{background:#e0414f}.btn.green{background:#1f9d62}.btn:disabled{opacity:.5}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.err{font-size:14px;min-height:20px;margin-top:10px;color:#c9243a}.err.good{color:#157a4b}
+.big{font-size:64px;font-weight:800;line-height:1;background:linear-gradient(90deg,#f0559b,#8f5be8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pic{width:100%;max-width:280px;aspect-ratio:4/3;border-radius:16px;background:#e9e4fb center/cover;display:grid;place-items:center;font-size:40px;margin:8px 0}
+.tag{display:inline-block;padding:5px 14px;border-radius:99px;font-weight:700;font-size:13px}
+.on{background:#d9f5e7;color:#157a4b}.off{background:#fde1e4;color:#b02032}.warn{background:#fff0c9;color:#8a5a00}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px;min-width:560px}
+th,td{padding:10px 8px;text-align:left;border-bottom:1px solid #eeeaf8}th{color:var(--muted);font-weight:600}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+.sm{border:0;border-radius:9px;padding:6px 12px;font:inherit;font-weight:700;cursor:pointer;background:#ece7fb;color:#5a3fc0}
+.sm.d{background:#fde1e4;color:#b02032}.sm.g{background:#d9f5e7;color:#157a4b}
+.modal{position:fixed;inset:0;background:rgba(29,35,80,.55);display:none;place-items:center;padding:20px;z-index:9}.modal.show{display:grid}
+.sheet{background:#fff;border-radius:22px;padding:24px;max-width:400px;width:100%}
+.hide{display:none!important}
+.prof{display:flex;align-items:center;gap:12px;margin-bottom:12px}.prof img{width:44px;height:44px;border-radius:50%}
+.void td{opacity:.5;text-decoration:line-through}
+</style>
+</head>
+<body>
+<div class="top"><div><b>OPEN HOUSE · POPULAR VOTE</b><small id="who">สำหรับผู้ขายและคุณครู</small></div><button class="btn ghost hide" id="out" type="button">ออกจากระบบ</button></div>
+<div class="wrap">
+
+<section class="card" id="loginCard">
+  <h2>เข้าสู่ระบบ</h2><p>เข้าสู่ระบบด้วยบัญชี Google หากเป็นการเข้าครั้งแรก ระบบจะให้ส่งคำขอสมัครเป็นผู้ขายหรือคุณครู และต้องรอคุณครูอนุมัติ</p>
+  <div id="gbtn"></div><div class="err" id="lerr" role="alert"></div>
+</section>
+
+<section class="card hide" id="reg">
+  <div class="prof"><img id="rimg" alt="" referrerpolicy="no-referrer"><div><b id="rname"></b><br><small id="rmail" style="color:var(--muted)"></small></div></div>
+  <div id="regForm">
+    <h2>สมัครใช้งาน</h2><p>บัญชีนี้ยังไม่มีสิทธิ์ผู้ขายหรือคุณครู เลือกสิทธิ์ที่ต้องการแล้วส่งคำขอ คุณครูจะเป็นผู้อนุมัติ</p>
+    <label for="rr">สมัครเป็น</label><select id="rr"><option value="vendor">ผู้ขาย</option><option value="teacher">คุณครู</option></select>
+    <div id="shopBox"><label for="rs">หมายเลขร้านของคุณ (1–27)</label><input id="rs" type="number" min="1" max="27" step="1"></div>
+    <div class="err" id="rerr" role="alert"></div>
+    <button class="btn" id="rsend" type="button" style="margin-top:12px">ส่งคำขอ</button>
+  </div>
+  <div id="regWait" class="hide"><h2>รอการอนุมัติ</h2><p id="waitTxt"></p><button class="btn ghost" id="recheck" type="button">ตรวจสอบสถานะอีกครั้ง</button></div>
+</section>
+
+<section class="hide" id="vendor">
+  <div class="card"><h2>คะแนนรวมของร้านคุณ</h2><p id="vname"></p><div class="big" id="vtotal">0</div><p style="margin-top:10px">ผู้ขายดูได้เฉพาะคะแนนรวมของร้านตัวเอง ไม่แสดงอันดับ</p></div>
+  <div class="card"><h2>แก้ไขข้อมูลร้าน</h2><p>ชื่อร้านและรูปที่แก้จะแสดงในหน้าโหวตภายในไม่กี่วินาที</p>
+    <label for="sn">ชื่อร้าน</label><input id="sn" maxlength="40">
+    <label for="si">ลิงก์รูปร้าน (ขึ้นต้นด้วย https://)</label><input id="si" placeholder="https://...">
+    <div class="pic" id="sp"></div>
+    <div class="err" id="serr" role="alert"></div>
+    <button class="btn" id="save" type="button">บันทึก</button></div>
+</section>
+
+<section class="hide" id="teacher">
+  <div class="card"><div class="row" style="justify-content:space-between"><div><h2>ผลโหวตทุกร้าน</h2><p style="margin:0" id="stat">อัปเดตอัตโนมัติทุก 5 วินาที</p></div><span class="tag" id="state"></span></div>
+    <div class="row" style="margin-top:14px"><button class="btn" id="tog" type="button"></button><button class="btn ghost" id="exp" type="button">ส่งออกเป็นไฟล์ CSV</button></div></div>
+  <div class="card hide" id="reqCard"><h2>คำขอสิทธิ์ที่รออนุมัติ</h2><div class="tw"><table><tbody id="reqRows"></tbody></table></div></div>
+  <div class="card tw"><table><thead><tr><th>อันดับ</th><th>ร้าน</th><th class="n">โหวต</th><th class="n">ปรับ</th><th class="n">รวม</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+  <div class="card"><h2>ตรวจสอบรายการโหวต</h2><p id="balNote">ดูรายการโหวตล่าสุด รายการจาก IP ที่โหวตถี่ผิดปกติจะมีป้าย "ตรวจสอบ" (เครือข่ายเดียวกัน เช่น Wi-Fi งาน อาจมีผู้โหวตจริงหลายคน) กด "ยกเลิก" เพื่อตัดโหวตที่ไม่ชอบมาพากลออกจากคะแนน</p>
+    <div class="row"><button class="btn ghost" id="bload" type="button">โหลดรายการ</button><label style="margin:0;font-weight:500"><input type="checkbox" id="bflag" style="width:auto"> แสดงเฉพาะที่ต้องตรวจสอบ</label></div>
+    <div class="tw" style="margin-top:12px"><table><thead><tr><th>เวลา</th><th>อีเมล</th><th>ร้าน</th><th>IP</th><th></th></tr></thead><tbody id="brows"></tbody></table></div></div>
+  <div class="card"><h2>ผู้ขายและคุณครูในระบบ</h2><div class="tw"><table><tbody id="staffRows"></tbody></table></div></div>
+</section>
+</div>
+
+<div class="modal" id="modal"><div class="sheet"><h2 id="mt">ปรับคะแนน</h2>
+  <label for="md">จำนวน (ใส่ - เพื่อลด เช่น -3)</label><input id="md" type="number" step="1">
+  <label for="mr">เหตุผล (บังคับ)</label><input id="mr" maxlength="120">
+  <div class="err" id="merr" role="alert"></div>
+  <div class="row" style="margin-top:12px"><button class="btn" id="mok" type="button">บันทึก</button><button class="btn ghost" id="mno" type="button">ยกเลิก</button></div></div></div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+const API = "/api";
+const $ = id => document.getElementById(id);
+const ss = { get(k) { try { return sessionStorage.getItem(k) } catch (e) { return null } }, set(k, v) { try { sessionStorage.setItem(k, v) } catch (e) {} }, del(k) { try { sessionStorage.removeItem(k) } catch (e) {} } };
+let token = ss.get("pv_stok"), me = null, timer = null, last = null, target = null, gReady = false, vendorInit = false;
+
+async function api(body) {
+  const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, ...body }) });
+  return r.json();
+}
+function cell(tag, txt, cls) { const c = document.createElement(tag); c.textContent = txt; if (cls) c.className = cls; return c; }
+function btn(txt, cls, fn) { const b = cell("button", txt, "sm " + (cls || "")); b.type = "button"; b.onclick = fn; return b; }
+
+// ---------- เข้าสู่ระบบ ----------
+function setupGoogle(clientId) {
+  if (gReady || !clientId) return;
+  const t = setInterval(() => {
+    if (window.google && google.accounts && google.accounts.id) {
+      clearInterval(t); gReady = true;
+      google.accounts.id.initialize({ client_id: clientId, callback: r => onCredential(r.credential) });
+      google.accounts.id.renderButton($("gbtn"), { theme: "outline", size: "large", shape: "pill", text: "signin_with", locale: "th" });
+    }
+  }, 200);
+}
+async function onCredential(credential) {
+  $("lerr").textContent = "";
+  try {
+    const j = await api({ action: "google", credential });
+    if (!j.ok) { $("lerr").textContent = j.error || "เข้าสู่ระบบไม่สำเร็จ"; return; }
+    token = j.token; ss.set("pv_stok", token); me = j.me; enter();
+  } catch (e) { $("lerr").textContent = "เข้าสู่ระบบไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่"; }
+}
+function logout() { api({ action: "logout" }).catch(() => {}); token = me = null; ss.del("pv_stok"); clearInterval(timer); $("who").textContent = "สำหรับผู้ขายและคุณครู"; show(); }
+
+function show() {
+  const role = me && me.role;
+  $("loginCard").classList.toggle("hide", !!me);
+  $("reg").classList.toggle("hide", !(me && role === "voter"));
+  $("vendor").classList.toggle("hide", role !== "vendor");
+  $("teacher").classList.toggle("hide", role !== "teacher");
+  $("out").classList.toggle("hide", !me);
+}
+function enter() {
+  $("who").textContent = (me.name || me.email) + ({ teacher: " · คุณครู", vendor: " · ผู้ขาย" }[me.role] || "");
+  if (me.role === "voter") { $("rimg").src = me.picture || ""; $("rname").textContent = me.name || ""; $("rmail").textContent = me.email; drawReg(); }
+  show(); clearInterval(timer);
+  if (me.role === "vendor" || me.role === "teacher") { load(); timer = setInterval(() => { if (!document.hidden && !$("modal").classList.contains("show") && me.role === "teacher") load(); }, 5000); if (me.role === "teacher") people(); }
+}
+
+// ---------- สมัครใช้งาน ----------
+function drawReg() {
+  const wait = !!me.reqRole;
+  $("regForm").classList.toggle("hide", wait); $("regWait").classList.toggle("hide", !wait);
+  if (wait) $("waitTxt").textContent = `ส่งคำขอเป็น${me.reqRole === "teacher" ? "คุณครู" : "ผู้ขาย (ร้านหมายเลข " + me.reqShop + ")"} แล้ว กรุณารอคุณครูอนุมัติ แล้วกดตรวจสอบสถานะอีกครั้ง`;
+}
+async function sendReq() {
+  $("rerr").textContent = "";
+  try {
+    const j = await api({ action: "requestRole", role: $("rr").value, shopId: $("rs").value });
+    if (!j.ok) { $("rerr").textContent = j.error || "ส่งคำขอไม่สำเร็จ"; return; }
+    recheck();
+  } catch (e) { $("rerr").textContent = "ส่งคำขอไม่สำเร็จ ลองใหม่อีกครั้ง"; }
+}
+async function recheck() {
+  try { const j = await api({ action: "me" }); if (j.ok) { me = j.me; enter(); } else if (j.error === "auth") logout(); } catch (e) {}
+}
+
+// ---------- ผู้ขาย ----------
+async function load() {
+  try {
+    const j = await api({ action: "dash" });
+    if (!j.ok) { if (j.error === "auth") { logout(); $("lerr").textContent = "หมดเวลาเข้าสู่ระบบ กรุณาเข้าใหม่"; } else if (j.error === "forbidden") recheck(); return; }
+    last = j; j.role === "vendor" ? drawVendor(j) : drawTeacher(j);
+  } catch (e) {}
+}
+function drawVendor(j) {
+  $("vname").textContent = j.shop.name; $("vtotal").textContent = j.total;
+  if (!vendorInit) { $("sn").value = j.shop.name; $("si").value = j.shop.img || ""; vendorInit = true; }
+  prev();
+}
+function prev() { const sp = $("sp"), u = $("si").value.trim(), good = /^https:\/\//.test(u); sp.style.backgroundImage = good ? `url("${u}")` : ""; sp.textContent = good ? "" : "🖼️"; }
+async function saveShop() {
+  const e = $("serr"); e.textContent = ""; e.className = "err";
+  try { const j = await api({ action: "updateShop", name: $("sn").value, img: $("si").value }); e.className = "err" + (j.ok ? " good" : ""); e.textContent = j.ok ? "บันทึกแล้ว" : (j.error || "บันทึกไม่สำเร็จ"); if (j.ok) load(); }
+  catch (x) { e.textContent = "บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง"; }
+}
+
+// ---------- คุณครู ----------
+function drawTeacher(j) {
+  $("stat").textContent = `อัปเดตทุก 5 วินาที · โหวตทั้งหมด ${j.stats.total} รายการ (ยกเลิกแล้ว ${j.stats.voided})`;
+  const st = $("state"); st.textContent = j.open ? "กำลังเปิดโหวต" : "ปิดโหวตแล้ว"; st.className = "tag " + (j.open ? "on" : "off");
+  $("tog").textContent = j.open ? "ปิดการโหวต" : "เปิดการโหวต"; $("tog").className = "btn " + (j.open ? "red" : "green");
+  const tb = $("rows"); tb.textContent = "";
+  j.rows.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.append(cell("td", r.rank), cell("td", `#${String(r.id).padStart(2, "0")} ${r.name}`), cell("td", r.votes, "n"), cell("td", (r.adj > 0 ? "+" : "") + r.adj, "n"), cell("td", r.total, "n"));
+    const td = document.createElement("td");
+    td.append(btn("ปรับคะแนน", "", () => { target = r; $("mt").textContent = "ปรับคะแนน: " + r.name; $("md").value = ""; $("mr").value = ""; $("merr").textContent = ""; $("modal").classList.add("show"); $("md").focus(); }));
+    tr.append(td); tb.append(tr);
+  });
+}
+async function toggle() { if (!last) return; const j = await api({ action: "setOpen", open: !last.open }); if (j.ok) load(); }
+async function adjust() {
+  const delta = parseInt($("md").value, 10), reason = $("mr").value.trim();
+  if (!delta || !reason) { $("merr").textContent = "ใส่จำนวนคะแนน (ไม่ใช่ 0) และเหตุผล"; return; }
+  $("mok").disabled = true;
+  try { const j = await api({ action: "adjust", shopId: target.id, delta, reason }); if (j.ok) { $("modal").classList.remove("show"); load(); } else $("merr").textContent = j.error || "บันทึกไม่สำเร็จ"; }
+  catch (e) { $("merr").textContent = "บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง"; } finally { $("mok").disabled = false; }
+}
+function exportCsv() {
+  if (!last || !last.rows) return;
+  const q = v => '"' + String(v).replace(/"/g, '""') + '"';
+  const csv = "\ufeff" + ["อันดับ,หมายเลขร้าน,ชื่อร้าน,โหวต,ปรับ,รวม"].concat(last.rows.map(r => [r.rank, r.id, q(r.name), r.votes, r.adj, r.total].join(","))).join("\r\n");
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" })); a.download = "popular-vote-results.csv"; document.body.append(a); a.click(); a.remove();
+}
+async function people() {
+  try {
+    const j = await api({ action: "people" }); if (!j.ok) return;
+    $("reqCard").classList.toggle("hide", !j.req.length);
+    const rq = $("reqRows"); rq.textContent = "";
+    j.req.forEach(p => {
+      const tr = document.createElement("tr"), td = document.createElement("td");
+      tr.append(cell("td", p.name || ""), cell("td", p.email), cell("td", p.req_role === "teacher" ? "ขอเป็นคุณครู" : "ขอเป็นผู้ขาย ร้านที่ " + p.req_shop));
+      td.append(btn("อนุมัติ", "g", async () => { await api({ action: "decide", sub: p.sub, approve: true }); people(); }), " ", btn("ปฏิเสธ", "d", async () => { await api({ action: "decide", sub: p.sub, approve: false }); people(); }));
+      tr.append(td); rq.append(tr);
+    });
+    const sf = $("staffRows"); sf.textContent = "";
+    j.staff.forEach(p => {
+      const tr = document.createElement("tr"), td = document.createElement("td");
+      tr.append(cell("td", p.name || ""), cell("td", p.email), cell("td", p.role === "teacher" ? "คุณครู" : "ผู้ขาย ร้านที่ " + p.shop_id));
+      td.append(btn("ถอนสิทธิ์", "d", async () => { if (!confirm("ถอนสิทธิ์ของ " + p.email + " ?")) return; const r = await api({ action: "revoke", sub: p.sub }); if (!r.ok) alert(r.error); people(); }));
+      tr.append(td); sf.append(tr);
+    });
+  } catch (e) {}
+}
+async function ballots() {
+  $("bload").disabled = true;
+  try {
+    const j = await api({ action: "ballots" }); if (!j.ok) return;
+    const only = $("bflag").checked, tb = $("brows"); tb.textContent = "";
+    j.rows.filter(r => !only || r.flag).forEach(r => {
+      const tr = document.createElement("tr"); if (r.void) tr.className = "void";
+      const ipc = cell("td", r.ip || ""); if (r.flag) { const t = cell("span", " ตรวจสอบ (" + r.ip_n + ")", "tag warn"); t.style.marginLeft = "6px"; ipc.append(t); }
+      tr.append(cell("td", new Date(r.created_at).toLocaleString("th-TH")), cell("td", r.email || ""), cell("td", "#" + r.shop_id), ipc);
+      const td = document.createElement("td");
+      td.append(r.void ? btn("คืนโหวต", "g", async () => { await api({ action: "void", id: r.id, void: false }); ballots(); load(); }) : btn("ยกเลิก", "d", async () => { if (!confirm("ตัดโหวตนี้ออกจากคะแนน?")) return; await api({ action: "void", id: r.id, void: true }); ballots(); load(); }));
+      tr.append(td); tb.append(tr);
+    });
+  } finally { $("bload").disabled = false; }
+}
+
+$("out").onclick = logout; $("save").onclick = saveShop; $("si").oninput = prev;
+$("rr").onchange = () => $("shopBox").classList.toggle("hide", $("rr").value !== "vendor");
+$("rsend").onclick = sendReq; $("recheck").onclick = recheck;
+$("tog").onclick = toggle; $("exp").onclick = exportCsv; $("mok").onclick = adjust; $("mno").onclick = () => $("modal").classList.remove("show");
+$("bload").onclick = ballots; $("bflag").onchange = () => { if ($("brows").children.length) ballots(); };
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("modal").classList.remove("show"); });
+
+(async () => {
+  try { const c = await (await fetch(API)).json(); setupGoogle(c.googleClientId); } catch (e) {}
+  if (token) { try { const j = await api({ action: "me" }); if (j.ok) { me = j.me; enter(); return; } } catch (e) {} token = null; ss.del("pv_stok"); }
+  show();
+})();
+</script>
+</body>
+</html>

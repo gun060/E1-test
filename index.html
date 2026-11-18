@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Open House · Popular Vote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1d2350;--blue:#2a34c4;--violet:#7b6cf0;--bg:#f6f4fb;--muted:#6b6f8d}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Prompt',system-ui,sans-serif;background:var(--bg);color:var(--ink);padding-bottom:120px}
+.hero{position:relative;overflow:hidden;color:#fff;text-align:center;padding:22px 20px 70px;background:linear-gradient(135deg,#6f7df5 0%,#a46fe0 55%,#ee6fb9 100%)}
+.hero::before{content:"";position:absolute;left:-90px;top:-70px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.18)}
+.hero::after{content:"";position:absolute;right:-60px;bottom:-90px;width:280px;height:280px;border-radius:50%;background:rgba(255,190,200,.45)}
+.bar{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px;max-width:1100px;margin:0 auto 26px}
+.brand{font-weight:800;font-size:15px;letter-spacing:.5px;color:#ff2a3c;-webkit-text-stroke:1px #fff;paint-order:stroke fill;text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.date{display:flex;align-items:center;gap:6px;background:#fff;color:var(--ink);font-size:12px;font-weight:500;padding:6px 12px;border-radius:99px;box-shadow:0 4px 14px rgba(60,30,120,.2)}
+.theme{position:relative;z-index:2;display:inline-block;background:linear-gradient(90deg,#fff3c4,#ffd9ec,#d9ddff);color:var(--blue);font-weight:700;font-size:14px;padding:10px 26px;border-radius:99px;border:2px solid rgba(255,255,255,.9);box-shadow:0 6px 18px rgba(80,40,160,.3)}
+h1{position:relative;z-index:2;margin:22px 0 10px;font-size:clamp(34px,7vw,56px);font-weight:800;line-height:1.15;text-shadow:0 3px 12px rgba(60,20,120,.25)}
+.sub{position:relative;z-index:2;font-weight:700;margin:0 0 6px;font-size:16px}
+.lead{position:relative;z-index:2;margin:0 auto;max-width:560px;font-size:15px;line-height:1.7;opacity:.95}
+.castle{position:absolute;right:4%;bottom:6px;font-size:64px;z-index:1;opacity:.55;filter:saturate(.4) brightness(1.4)}
+.spark{position:absolute;z-index:1;color:#ffe27a;font-size:20px}
+.main{max-width:1100px;margin:-34px auto 0;padding:0 16px;position:relative;z-index:3}
+.notice{display:none;background:#fde1e4;color:#a41d2f;border-radius:16px;padding:14px 18px;font-weight:700;text-align:center;margin-bottom:12px;box-shadow:0 6px 18px rgba(160,30,50,.15)}
+.notice.on{display:block}
+.head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:56px 8px 18px}
+.eyebrow{margin:0;color:#8a8fb0;font-weight:700;font-size:13px;letter-spacing:1.5px}
+.head h2{margin:2px 0 4px;font-size:clamp(26px,5vw,36px);font-weight:800;background:linear-gradient(90deg,#f0559b,#8f5be8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.head p{margin:0;color:var(--blue);font-weight:700;font-size:15px}
+.count{background:#ece7fb;color:#6a4fd0;font-weight:700;font-size:12px;padding:6px 14px;border-radius:99px;white-space:nowrap}
+.panel{background:#fff;border-radius:26px;padding:18px;box-shadow:0 14px 40px rgba(90,60,170,.12)}
+.search{display:flex;align-items:center;gap:10px;border:1px solid #e3e0f2;border-radius:14px;padding:0 14px;background:#faf9ff}
+.search input{flex:1;border:0;background:none;font:inherit;font-size:14px;padding:13px 0;outline:none;color:var(--ink)}
+.search:focus-within{border-color:var(--violet);box-shadow:0 0 0 3px rgba(123,108,240,.2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;margin-top:18px}
+.shop{all:unset;box-sizing:border-box;cursor:pointer;background:#fff;border-radius:18px;overflow:hidden;border:2px solid #ece9f7;box-shadow:0 6px 18px rgba(60,40,120,.08);transition:transform .15s,border-color .15s,box-shadow .15s;display:flex;flex-direction:column}
+.shop:hover{transform:translateY(-3px)}
+.shop:focus-visible{outline:3px solid var(--violet);outline-offset:2px}
+.shop[aria-checked=true]{border-color:#e0509d;box-shadow:0 0 0 4px rgba(232,100,184,.25),0 10px 24px rgba(200,60,150,.25)}
+.pic{position:relative;aspect-ratio:4/3;display:grid;place-items:center;font-size:48px;background-size:cover;background-position:center}
+.no{position:absolute;left:10px;top:10px;background:rgba(29,35,80,.82);color:#fff;font-weight:700;font-size:12px;padding:3px 10px;border-radius:99px}
+.tick{position:absolute;right:10px;top:10px;width:28px;height:28px;border-radius:50%;background:#e0509d;color:#fff;display:none;place-items:center;font-weight:800}
+.shop[aria-checked=true] .tick{display:grid}
+.name{padding:12px 14px 14px;font-weight:600;font-size:15px;line-height:1.35}
+.empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:30px 0}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:20;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);border-top:1px solid #e6e2f5;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px))}
+.dock-in{max-width:1100px;margin:auto;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pick{flex:1 1 160px;min-width:0;font-size:13px;color:var(--muted)}
+.pick b{display:block;color:var(--ink);font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.field{border:1px solid #ddd8f2;border-radius:12px;padding:11px 12px;font:inherit;font-size:14px;min-width:0;background:#fff;color:var(--ink)}
+.field:focus{outline:3px solid rgba(123,108,240,.3);border-color:var(--violet)}
+#code{flex:0 1 180px;text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+#voter{flex:1 1 140px}
+.btn{border:0;font:inherit;font-weight:700;font-size:15px;padding:12px 22px;border-radius:14px;cursor:pointer;color:#fff;background:linear-gradient(90deg,#8f5be8,#ee5fae);box-shadow:0 6px 16px rgba(180,70,170,.35)}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.hint{max-width:1100px;margin:8px auto 0;font-size:12px;color:var(--muted)}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(29,35,80,.55);display:none;place-items:center;padding:20px}
+.modal.on{display:grid}
+.sheet{background:#fff;border-radius:24px;max-width:420px;width:100%;padding:28px;text-align:center}
+.sheet h3{margin:0 0 8px;font-size:22px}
+.sheet p{margin:0 0 18px;color:var(--muted);line-height:1.6}
+.toast{position:fixed;left:50%;bottom:150px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:12px;font-size:14px;z-index:60;display:none;max-width:90vw;text-align:center}
+@media(max-width:520px){.grid{grid-template-columns:repeat(2,1fr);gap:12px}.castle{font-size:44px}.name{font-size:14px;padding:10px}.head{flex-direction:column;align-items:flex-start;padding-top:48px}#code{flex:1 1 140px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+.acct{flex:1 1 220px;display:flex;align-items:center;gap:10px;min-width:0;min-height:44px}
+.acct .me{display:flex;align-items:center;gap:8px;min-width:0;font-size:14px}
+.acct img{width:32px;height:32px;border-radius:50%}
+.acct span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.lnk{border:0;background:none;color:var(--blue);font:inherit;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;padding:4px}
+.hide{display:none!important}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="bar"><span class="brand">OPEN HOUSE · POPULAR VOTE</span><span class="date">📅 ศุกร์ 25 ธันวาคม 2569</span></div>
+  <span class="spark" style="left:22%;top:34%" aria-hidden="true">✦</span><span class="spark" style="right:18%;top:48%;color:#fff" aria-hidden="true">✿</span>
+  <div class="theme">✦ Picnic at Disney Land ✦</div>
+  <h1>เลือกสุดยอดร้าน. Popular Vote!</h1>
+  <p class="sub">Open House ตลาดนัดนักเรียน</p>
+  <p class="lead">ร้านไหนโดนใจคุณที่สุด? เลือกหนึ่งร้านจาก <span class="n">27</span> รายการ แล้วส่งคะแนนให้ร้านโปรดของคุณ</p>
+  <div class="castle" aria-hidden="true">🏰</div>
+</header>
+
+<main class="main">
+  <div class="notice" id="closedNotice" role="status">ขณะนี้ปิดการโหวตแล้ว ขอบคุณทุกท่านที่ร่วมสนุก</div>
+  <div class="head">
+    <div><p class="eyebrow">YOUR FAVORITE</p><h2>เลือกร้านที่คุณชอบ</h2><p>เลือกหนึ่งรายการจาก <span class="n">27</span> ตัวเลือก แล้วกดส่งคะแนนโหวต</p></div>
+    <span class="count"><span class="n">27</span> รายการ</span>
+  </div>
+  <section class="panel">
+    <label class="search"><span aria-hidden="true">🔍</span><input id="q" type="search" placeholder="ค้นหาชื่อร้านหรือหมายเลขรายการ..." aria-label="ค้นหาร้าน"></label>
+    <div class="grid" id="grid" role="radiogroup" aria-label="รายชื่อร้าน"></div>
+  </section>
+</main>
+
+<div class="dock"><div class="dock-in">
+  <div class="pick">ร้านที่เลือก<b id="pick">ยังไม่ได้เลือก</b></div>
+  <div class="acct"><div id="gbtn"></div><div class="me hide" id="me"><img id="av" alt="" width="32" height="32" referrerpolicy="no-referrer"><span id="meName"></span><button class="lnk" id="outBtn" type="button">ออก</button></div></div>
+  <button class="btn" id="sendBtn" type="button" disabled>ส่งคะแนนโหวต</button>
+</div>
+<div class="hint">เข้าสู่ระบบด้วยบัญชี Google เพื่อโหวต 1 บัญชีโหวตได้ 1 ครั้ง หากเปิดจากแอปแชต (เช่น LINE) แล้วเข้าสู่ระบบไม่ได้ ให้เปิดลิงก์ด้วย Chrome หรือ Safari</div></div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script>
+const API = "/api"; // เซิร์ฟเวอร์เดียวกับหน้านี้ ไม่ต้องตั้งค่า
+
+// ชื่อร้านตั้งต้นและอีโมจิ (ชื่อและรูปจริงมาจากเซิร์ฟเวอร์ ผู้ขายแก้ได้ในหน้า staff)
+const SHOPS = [
+  ["ร้านส้มตำแซ่บ","🥗"],["หมูกระทะเด็กดี","🥩"],["ก๋วยเตี๋ยวเรือ","🍜"],["ไก่ทอดกรอบ","🍗"],["ชานมไข่มุก","🧋"],["ขนมครก","🥞"],
+  ["ลูกชิ้นปิ้ง","🍢"],["ไอศกรีมโฮมเมด","🍨"],["ข้าวหมูทอด","🍚"],["โรตีสายไหม","🍯"],["น้ำผลไม้ปั่น","🍹"],["ทาโกยากิ","🐙"],
+  ["ข้าวเหนียวมะม่วง","🥭"],["ปอเปี๊ยะทอด","🥟"],["เฟรนช์ฟรายส์","🍟"],["วาฟเฟิลหน้าหวาน","🧇"],["ไส้กรอกอีสาน","🌭"],["บัวลอยไข่หวาน","🍡"],
+  ["พิซซ่าชิ้นโต","🍕"],["ขนมปังปิ้ง","🍞"],["น้ำแข็งใส","🍧"],["ข้าวเหนียวหมูปิ้ง","🍖"],["คัพเค้กน่ารัก","🧁"],["ซูชิมือใหม่","🍣"],
+  ["กล้วยทอดทอง","🍌"],["สลัดผักสด","🥬"],["โดนัทจิ๋ว","🍩"]
+].map(([name, emoji], i) => ({ id: i + 1, name, emoji, img: "" }));
+
+const $ = id => document.getElementById(id);
+const GRADS = ["#9aa8ff,#d6a0ff", "#ffb3d1,#ffd9a0", "#a0e0ff,#b8a8ff", "#ffc2e0,#c0b0ff", "#ffe0a0,#ffb0c8"];
+const MESSAGES = { closed: "ปิดการโหวตแล้ว", already_voted: "บัญชีนี้โหวตไปแล้ว", own_shop: "ผู้ขายโหวตให้ร้านของตัวเองไม่ได้", bad_shop: "ร้านที่เลือกไม่ถูกต้อง" };
+
+const store = { get(k) { try { return localStorage.getItem(k) } catch (e) { return null } }, set(k, v) { try { localStorage.setItem(k, v) } catch (e) {} }, del(k) { try { localStorage.removeItem(k) } catch (e) {} } };
+let token = store.get("pv_tok"), me = null, sel = null, open = true, busy = false, gReady = false;
+document.querySelectorAll(".n").forEach(e => e.textContent = SHOPS.length);
+
+async function call(body) {
+  const r = await fetch(API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token, ...body }) });
+  return r.json();
+}
+const shopName = id => (SHOPS.find(x => x.id === id) || {}).name || "";
+const label = id => "#" + String(id).padStart(2, "0") + " " + shopName(id);
+
+function render() {
+  const term = $("q").value.trim().toLowerCase(), g = $("grid");
+  g.textContent = "";
+  const list = SHOPS.filter(s => !term || s.name.toLowerCase().includes(term) || String(s.id) === term);
+  if (!list.length) { const e = document.createElement("div"); e.className = "empty"; e.textContent = "ไม่พบร้านที่ค้นหา ลองพิมพ์ชื่อหรือหมายเลขอื่น"; g.appendChild(e); return; }
+  const mine = me && me.voted ? me.votedShop : sel;
+  list.forEach(s => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "shop"; b.setAttribute("role", "radio"); b.setAttribute("aria-checked", mine === s.id);
+    const p = document.createElement("div"); p.className = "pic";
+    if (s.img) p.style.backgroundImage = `url("${s.img}")`;
+    else { p.style.background = `linear-gradient(135deg,${GRADS[s.id % GRADS.length]})`; p.textContent = s.emoji; }
+    const n = document.createElement("span"); n.className = "no"; n.textContent = "#" + String(s.id).padStart(2, "0");
+    const t = document.createElement("span"); t.className = "tick"; t.textContent = "✓";
+    p.append(n, t);
+    const nm = document.createElement("div"); nm.className = "name"; nm.textContent = s.name;
+    b.append(p, nm); b.onclick = () => choose(s.id); g.appendChild(b);
+  });
+}
+
+function refresh() {
+  const btn = $("sendBtn");
+  $("gbtn").classList.toggle("hide", !!me); $("me").classList.toggle("hide", !me);
+  if (me) { $("meName").textContent = me.name || me.email; $("av").src = me.picture || ""; $("av").classList.toggle("hide", !me.picture); }
+  $("closedNotice").classList.toggle("on", !open);
+  if (me && me.voted) $("pick").textContent = "โหวตแล้ว: " + label(me.votedShop);
+  else $("pick").textContent = sel ? label(sel) : "ยังไม่ได้เลือก";
+  if (!open) { btn.disabled = true; btn.textContent = "ปิดโหวตแล้ว"; }
+  else if (busy) { btn.disabled = true; btn.textContent = "กำลังส่ง..."; }
+  else if (me && me.voted) { btn.disabled = true; btn.textContent = "โหวตแล้ว"; }
+  else { btn.disabled = sel == null; btn.textContent = "ส่งคะแนนโหวต"; }
+}
+
+function choose(id) {
+  if (!open) return toast("ขณะนี้ปิดการโหวตแล้ว");
+  if (me && me.voted) return toast("บัญชีนี้โหวตไปแล้ว ขอบคุณที่ร่วมสนุก");
+  sel = id; refresh(); render();
+}
+
+let toastTimer;
+function toast(m) { const t = $("toast"); t.textContent = m; t.style.display = "block"; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.style.display = "none", 3200); }
+function el(tag, text, cls) { const e = document.createElement(tag); if (text) e.textContent = text; if (cls) e.className = cls; return e; }
+function showModal(title, text) {
+  const s = $("sheet"); s.textContent = "";
+  const b = el("button", "ปิด", "btn"); b.type = "button"; b.onclick = closeModal;
+  s.append(el("h3", title), el("p", text), b);
+  $("modal").classList.add("on"); b.focus();
+}
+function closeModal() { $("modal").classList.remove("on"); }
+$("modal").onclick = e => { if (e.target.id === "modal") closeModal(); };
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+// ---------- เข้าสู่ระบบด้วย Google ----------
+async function onCredential(credential) {
+  try {
+    const j = await call({ action: "google", credential });
+    if (!j.ok) return toast(j.error || "เข้าสู่ระบบไม่สำเร็จ");
+    token = j.token; me = j.me; store.set("pv_tok", token);
+    toast("เข้าสู่ระบบแล้ว"); refresh(); render();
+  } catch (e) { toast("เข้าสู่ระบบไม่สำเร็จ ตรวจสอบอินเทอร์เน็ตแล้วลองใหม่"); }
+}
+function setupGoogle(clientId) {
+  if (gReady || !clientId) return;
+  const t = setInterval(() => {
+    if (window.google && google.accounts && google.accounts.id) {
+      clearInterval(t); gReady = true;
+      google.accounts.id.initialize({ client_id: clientId, callback: r => onCredential(r.credential) });
+      google.accounts.id.renderButton($("gbtn"), { theme: "outline", size: "large", shape: "pill", text: "signin_with", locale: "th" });
+    }
+  }, 200);
+}
+async function logout() {
+  try { await call({ action: "logout" }); } catch (e) {}
+  token = null; me = null; sel = null; store.del("pv_tok"); refresh(); render();
+}
+
+// ---------- ส่งโหวต ----------
+async function postVote(shopId) {
+  let last = new Error("network");
+  for (let i = 0; i < 6; i++) {
+    try {
+      const j = await call({ action: "vote", shopId });
+      if (j.ok) return;
+      if (j.error === "already_voted" && i > 0) return; // ส่งซ้ำแล้วเจอว่าโหวตไปแล้ว แปลว่ารอบก่อนสำเร็จ
+      if (j.error && j.error !== "server") throw Object.assign(new Error(j.error), { final: true });
+      last = new Error("server");
+    } catch (e) { if (e.final) throw e; last = e; }
+    await wait(Math.min(8000, 700 * 2 ** i) + Math.random() * 600);
+  }
+  throw last;
+}
+async function send() {
+  if (busy || sel == null) return;
+  if (!me) { toast("กรุณาเข้าสู่ระบบด้วย Google ก่อนโหวต"); return; }
+  const id = sel; busy = true; refresh();
+  try {
+    await postVote(id);
+    me.voted = true; me.votedShop = id; sel = null;
+    showModal("ส่งคะแนนโหวตแล้ว 🎉", `ขอบคุณที่โหวตให้ "${shopName(id)}"`);
+  } catch (err) {
+    if (err.message === "auth") { toast("หมดเวลาเข้าสู่ระบบ กรุณาเข้าสู่ระบบใหม่"); token = null; me = null; store.del("pv_tok"); }
+    else toast(MESSAGES[err.message] || (err.final ? err.message : "ส่งไม่สำเร็จ ยังไม่นับคะแนน กดส่งอีกครั้งได้เลย"));
+    if (err.message === "closed") open = false;
+  } finally { busy = false; refresh(); render(); }
+}
+
+$("q").oninput = render; $("sendBtn").onclick = send; $("outBtn").onclick = logout;
+
+async function loadShops() {
+  try {
+    const j = await (await fetch(API)).json();
+    (j.shops || []).forEach(r => { const s = SHOPS.find(x => x.id === r.id); if (s) { s.name = r.name; s.img = r.img || ""; } });
+    open = j.open !== false; setupGoogle(j.googleClientId); refresh(); render();
+  } catch (e) { /* ใช้รายชื่อตั้งต้นต่อไปได้ */ }
+}
+async function restore() {
+  if (!token) return;
+  try { const j = await call({ action: "me" }); if (j.ok) { me = j.me; } else if (j.error === "auth") { token = null; store.del("pv_tok"); } } catch (e) {}
+  refresh(); render();
+}
+render(); refresh(); loadShops().then(restore);
+setInterval(() => { if (!document.hidden) loadShops(); }, 30000);
+</script>
+</body>
+</html>
